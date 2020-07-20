@@ -1,0 +1,26 @@
+{
+  "name": "betsapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "build": "nexe",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "v": "node -v"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "dotenv": "^8.2.0",
+    "easyvk": "^2.7.35",
+    "firebase-admin": "^8.13.0",
+    "log4js": "^6.3.0",
+    "logger": "0.0.1",
+    "node": "12.18.1",
+    "node-fetch": "^2.6.0",
+    "node-vk-bot-api": "^3.3.4"
+  },
+  "bin": "bot.js"
+}

@@ -65,3 +65,4 @@ node_modules/
 .env
 /firebase_configs/
 /functions/
+/.idea/

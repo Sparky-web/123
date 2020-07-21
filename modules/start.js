@@ -20,7 +20,7 @@ async function index(bot) {
         const {time, totals, maxGoals, scores} = await getConfig()
         const parsed = await parse()
 
-        const filtered = await filterParsed(parsed, time, totals, maxGoals.max, scores.value)
+        const filtered = await filterParsed(parsed, time, totals, maxGoals.max, scores)
             .then(filterByScore)
             .then(filterOlder)
             .then(getStatistic)
@@ -64,13 +64,16 @@ async function filterParsed (parsed, timings, totals, maxGoals, scores) {
     const filtered = [];
     for(let e of parsed) {
         const firstTimeCondition = e.time >= timings["1"][0] && e.time <= timings["1"][1]
-            && e.expectedTotal - e.totalNow >= totals["1"][0] && e.expectedTotal - e.totalNow <= totals["1"][1];
+            && e.expectedTotal - e.totalNow >= totals["1"][0]
+            && e.expectedTotal - e.totalNow <= totals["1"][1]
+            && !scores["1"].find(el => el === e.score)
         const secondTimeCondition = e.time >= timings["2"][0] && e.time <= timings["2"][1]
-            && e.expectedTotal - e.totalNow >= totals["2"][0] && e.expectedTotal - e.totalNow <= totals["2"][1];
+            && e.expectedTotal - e.totalNow >= totals["2"][0]
+            && e.expectedTotal - e.totalNow <= totals["2"][1]
+            && !scores["2"].find(el => el === e.score);
 
         if((firstTimeCondition || secondTimeCondition)
-            && e.totalNow <= maxGoals
-            && !scores.find(el => el === e.score)) {
+            && e.totalNow <= maxGoals) {
             filtered.push(e)
         }
     }

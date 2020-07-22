@@ -34,7 +34,9 @@ bot.on(async ctx => {
 bot.startPolling(async () => {
     try {
         const users = []
-        await db.collection("users").get()
+        await db.collection("users")
+            .where("isRunning", "==", true)
+            .get()
             .then(snap => snap.forEach(async doc => {
                 await db.collection("users").doc(doc.id).update({isRunning: false})
                 users.push(doc.data().user_id)

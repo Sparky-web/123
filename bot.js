@@ -39,17 +39,20 @@ bot.startPolling(async () => {
             .get()
             .then(snap => snap.forEach(async doc => {
                 await db.collection("users").doc(doc.id).update({isRunning: false})
-                users.push(doc.data().user_id)
+                users.push(doc.id)
             }))
 
-        setTimeout(() =>
-            bot.sendMessage(users,
-                "❗ Внимание ❗\n" +
-                "Бот перезапущен, нажмите на кнопку ниже чтобы продолжить.", null,
-                Markup.keyboard([Markup.button("Начать", "primary")]))
-        , 5000)
-
-
+        if(users.length) {
+            setTimeout(() =>
+                    bot.sendMessage(users,
+                        "❗ Внимание ❗\n" +
+                        "Бот перезапущен, нажмите на кнопку ниже чтобы продолжить.", null,
+                        Markup.keyboard([Markup.button("Начать", "primary")]))
+                        .catch(e => {
+                            logger.error(e)
+                        })
+                , 5000)
+        }
         start(bot)
         console.log("started")
     } catch (e) {

@@ -121,7 +121,6 @@ function stringifyResult (parsed) {
 Время: ${el.time}
 Команды: ${el.firstTeam} | ${el.secondTeam}
 Счет: ${el.score}
-Ожидаемый тотал: ${el.rawExpectedTotal} 
 (Ожидается гол)
 ➖➖➖➖➖➖➖➖
 ${el.stat.map(el => `${el.name}: ${el.first} | ${el.second} \n`)}

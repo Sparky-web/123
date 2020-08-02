@@ -1,7 +1,7 @@
 const fetch = require("node-fetch");
 const cheerio = require('cheerio');
 
-const headers = require("./modules/config")
+const headers = require("./modules/config.js")
 
 const log4js = require("log4js");
 const logger = log4js.getLogger();
@@ -10,7 +10,7 @@ logger.level = "debug";
 async function parse() {
     try {
         const data = await fetch("http://ru.betsapi.com/ci/soccer?ot=3", {
-            headers
+            headers: headers
         })
             .then(e => e.text())
             .catch(e => {

@@ -48,7 +48,8 @@ async function parse() {
                     rawExpectedTotal,
                     totalNow,
                     score,
-                    link
+                    link,
+                    sendToGroup: false
                 })
             }
         });

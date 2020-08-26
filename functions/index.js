@@ -88,13 +88,15 @@ exports.sendMessage = functions.https.onCall(async (data, context) => {
     await db.collection("users")
         .get()
         .then(snap => snap.forEach(doc => {
-            users.push(doc.id)
+            users.push(+doc.id)
         }))
 
-    const bot = new vkBot(await db.collection("settings")
+    const token = await db.collection("settings")
         .doc("botToken")
         .get()
-        .then(e => e.data().value))
+        .then(e => e.data().value)
+
+    const bot = new vkBot(token)
 
     const arrays = [], size = 99;
 
@@ -108,6 +110,7 @@ exports.sendMessage = functions.https.onCall(async (data, context) => {
 
     return {
         arrays,
-        data
+        data,
+        token
     }
 })

@@ -2,6 +2,7 @@ const fetch = require("node-fetch");
 const cheerio = require("cheerio")
 
 const headers = require("./config")
+const oddsCheck = require("./oddsCheck")
 
 const db = require("../db")
 const parse = require("../parse")
@@ -14,20 +15,36 @@ const log4js = require("log4js");
 const logger = log4js.getLogger();
 logger.level = "debug";
 
+const api = require('node-vk-bot-api/lib/api');
+
+const dotenv = require("dotenv")
+dotenv.config()
+
 async function index(bot) {
     try {
         // Getting timings from DB
-        const {time, totals, maxGoals, scores} = await getConfig()
+        const {time, totals, maxGoals, scores, oddsMatchSettings} = await getConfig()
         const parsed = await parse()
+        const oddsMatches = await oddsCheck(oddsMatchSettings, parsed)
 
         const filtered = await filterParsed(parsed, time, totals, maxGoals.max, scores)
             .then(filterByScore)
+            .then(matches => [...matches, ...oddsMatches])
             .then(filterOlder)
             .then(getStatistic)
+
         const stringResult = stringifyResult(filtered)
 
         let activeUsers = await getActiveUsers()
 
+        if (oddsMatches && oddsMatches.length) {
+            await api("wall.post", {
+                owner_id: -process.env.GROUP_ID,
+                from_group: 1,
+                message: stringifyResult(oddsMatches),
+                access_token: process.env.VK_ACCESS_KEY,
+            })
+        }
         if (activeUsers.length && stringResult) {
             checkResult(filtered)
             console.log(activeUsers, stringResult)
@@ -147,9 +164,11 @@ async function getScoreFromLink (link) {
 }
 function start (bot) {
     index(bot)
-    setInterval(() => index(bot), 60000)
+    setInterval(() => index(bot), 120000)
     setInterval(() => session = [],1800000)
 }
+
+
 
 module.exports = start
 

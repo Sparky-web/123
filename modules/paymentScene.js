@@ -16,10 +16,11 @@ function randomInteger(min, max) {
     return Math.round(rand);
 }
 
-
 module.exports = new Scene("payment",
-        ctx => {
-            ctx.reply("💰 Стоимость продления подписки на 1 день - 20 рублей.\n" +
+        async ctx => {
+            const paymentData = await db.collection("settings").doc("payments").get().then(snap => snap.data())
+            ctx.session.paymentData = paymentData
+            ctx.reply(`💰 Стоимость продления подписки на 1 день - ${paymentData.pricePerDay} р.\n` +
                 "🉐 При продлении подписки на 1 месяц или больше - скидка 30%\n\n" +
                 "❗ Введите кол-во дней для продления (Например 35) ❗", null, Markup.keyboard(["Отмена"]))
             ctx.scene.next()
@@ -27,7 +28,7 @@ module.exports = new Scene("payment",
         async ctx => {
             if (ctx.message.body === "Отмена") ctx.scene.enter("index")
             else if (!isNaN(+ctx.message.body) && +ctx.message.body < 1000000) {
-                const paymentData = await db.collection("settings").doc("payments").get().then(snap => snap.data())
+                const paymentData = ctx.session.paymentData
                 const amount = Math.floor(+ctx.message.body)
                 const sum = Math.floor(amount < paymentData.discountSince ?
                     amount * paymentData.pricePerDay :

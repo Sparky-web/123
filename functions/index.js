@@ -96,7 +96,7 @@ exports.sendMessage = functions.https.onCall(async (data, context) => {
         .get()
         .then(e => e.data().value)
 
-    const bot = new vkBot(token)
+    const bot = await new vkBot(token)
 
     const arrays = [], size = 99;
 
@@ -104,8 +104,12 @@ exports.sendMessage = functions.https.onCall(async (data, context) => {
         arrays.push(users.splice(0, size));
     }
 
-    for(let usersArray of users) {
-        bot.sendMessage(usersArray, data.text, data.attachment)
+    for(let usersArray of arrays) {
+        const x = await bot.sendMessage(usersArray, data.text, data.attachment).catch(e => {
+            console.error(e)
+            return "Нихуя не работает"
+        })
+        console.log(x)
     }
 
     return {

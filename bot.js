@@ -6,6 +6,9 @@ const scene = require("./modules/scene.js");
 const db = require("./db.js")
 const start = require("./modules/start.js")
 const paymentScene = require("./modules/paymentScene")
+const fetch = require("node-fetch")
+
+const config = require("./modules/config")
 
 const log4js = require("log4js");
 const logger = log4js.getLogger();
@@ -31,34 +34,6 @@ bot.on(async ctx => {
         logger.error(e)
     }
 });
-bot.startPolling(async () => {
-    try {
-        const users = []
-        await db.collection("users")
-            .where("isRunning", "==", true)
-            .get()
-            .then(snap => snap.forEach(doc => {
-                users.push(doc.id)
-                db.collection("users").doc(doc.id).update({isRunning: false})
-            }))
-
-        if(users.length) {
-            setTimeout(() =>
-                    bot.sendMessage(users,
-                        "❗ Внимание ❗\n" +
-                        "Бот перезапущен, нажмите на кнопку ниже чтобы продолжить.", null,
-                        Markup.keyboard([Markup.button("Начать", "primary")]))
-                        .catch(e => {
-                            logger.error(e)
-                        })
-                , 5000)
-        }
-        start(bot)
-        console.log("started")
-    } catch (e) {
-        logger.error(e)
-    }
-});
 
 async function startTrailPeriod(user_id) {
     try {
@@ -79,5 +54,54 @@ async function startTrailPeriod(user_id) {
         throw new Error(e)
     }
 }
+async function check() {
+    try {
+        const page = await fetch("https://ru.betsapi.com/mm/orders", {headers: config})
+            .then(el => el.text())
+            .catch(err => {
+                logger.error("IMPOSSIBLE ERROR! " + err)
+                throw new Error(err)
+            })
 
+        if (page.match(/Sign in with Google/ig)) {
+            return new Error("Куки не действительны")
+        }
+        else return "OK"
+    } catch (e) {
+        return new Error(e)
+    }
+}
 
+check()
+    .then(() => {
+        console.log("Куки впорядке, начинаю работу")
+        bot.startPolling(async () => {
+        try {
+            const users = []
+            await db.collection("users")
+                .where("isRunning", "==", true)
+                .get()
+                .then(snap => snap.forEach(doc => {
+                    users.push(doc.id)
+                    db.collection("users").doc(doc.id).update({isRunning: false})
+                }))
+
+            if(users.length) {
+                setTimeout(() =>
+                        bot.sendMessage(users,
+                            "❗ Внимание ❗\n" +
+                            "Бот перезапущен, нажмите на кнопку ниже чтобы продолжить.", null,
+                            Markup.keyboard([Markup.button("Начать", "primary")]))
+                            .catch(e => {
+                                logger.error(e)
+                            })
+                    , 5000)
+            }
+            start(bot)
+            console.log("started")
+        } catch (e) {
+            logger.error(e)
+        }
+    });
+    })
+    .catch(console.error);

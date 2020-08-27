@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/BetsApiVkBot.iml" filepath="$PROJECT_DIR$/.idea/BetsApiVkBot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../best-api-frontend/.idea/best-api-frontend.iml" filepath="$PROJECT_DIR$/../best-api-frontend/.idea/best-api-frontend.iml" />
     </modules>
   </component>
 </project>

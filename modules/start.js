@@ -30,7 +30,7 @@ async function index(bot) {
             .then(getStatistic)
 
         const stringResult = stringifyResult(oddsMatches)
-        let activeUsers = [1, 2] //await getActiveUsers()
+        let activeUsers = await getActiveUsers()
 
         // if (oddsMatches && oddsMatches.length) {
         //     await api("wall.post", {

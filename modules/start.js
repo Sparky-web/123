@@ -23,31 +23,26 @@ dotenv.config()
 async function index(bot) {
     try {
         // Getting timings from DB
-        const {time, totals, maxGoals, scores, oddsMatchSettings} = await getConfig()
+        const {oddsMatchSettings} = await getConfig()
         const parsed = await parse()
         const oddsMatches = await oddsCheck(oddsMatchSettings, parsed)
-
-        const filtered = await filterParsed(parsed, time, totals, maxGoals.max, scores)
-            .then(filterByScore)
-            .then(matches => [...matches, ...oddsMatches])
             .then(filterOlder)
             .then(getStatistic)
 
-        const stringResult = stringifyResult(filtered)
+        const stringResult = stringifyResult(oddsMatches)
+        let activeUsers = [1, 2] //await getActiveUsers()
 
-        let activeUsers = await getActiveUsers()
-
-        if (oddsMatches && oddsMatches.length) {
-            await api("wall.post", {
-                owner_id: -process.env.GROUP_ID,
-                from_group: 1,
-                message: stringifyResult(oddsMatches),
-                access_token: process.env.VK_ACCESS_KEY,
-            })
-        }
+        // if (oddsMatches && oddsMatches.length) {
+        //     await api("wall.post", {
+        //         owner_id: -process.env.GROUP_ID,
+        //         from_group: 1,
+        //         message: stringifyResult(oddsMatches),
+        //         access_token: process.env.VK_ACCESS_KEY,
+        //     })
+        // }
         if (activeUsers.length && stringResult) {
-            checkResult(filtered)
             console.log(activeUsers, stringResult)
+            checkResult(oddsMatches)
             bot.sendMessage(activeUsers, stringResult)
         }
     } catch (e) {
@@ -96,7 +91,6 @@ async function filterParsed (parsed, timings, totals, maxGoals, scores) {
     }
     return filtered
 }
-
 function filterByScore (parsed) {
     return new Promise((resolve, reject) => {
         setTimeout(async () => {
@@ -110,6 +104,7 @@ function filterByScore (parsed) {
         }, 30000)
     })
 }
+
 function filterOlder (parsed) {
     return parsed.filter(el => {
         if(!session.find(e => e === el.uId)) {
@@ -167,7 +162,6 @@ function start (bot) {
     setInterval(() => index(bot), 120000)
     setInterval(() => session = [],1800000)
 }
-
 
 
 module.exports = start

@@ -21,7 +21,7 @@ dotenv.config()
 async function index(bot) {
     try {
         // Getting timings from DB
-        const {oddsMatchSettings} = await getConfig("oddsMatchSettings")
+        const {oddsMatchSettings} = await getConfig(["oddsMatchSettings"])
         const parsed = await parse()
         const oddsMatches = await oddsCheck(oddsMatchSettings, parsed, bot)
             .then(filterOlder)

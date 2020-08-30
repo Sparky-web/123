@@ -15,17 +15,15 @@ const log4js = require("log4js");
 const logger = log4js.getLogger();
 logger.level = "debug";
 
-const api = require('node-vk-bot-api/lib/api');
-
 const dotenv = require("dotenv")
 dotenv.config()
 
 async function index(bot) {
     try {
         // Getting timings from DB
-        const {oddsMatchSettings} = await getConfig()
+        const {oddsMatchSettings} = await getConfig("oddsMatchSettings")
         const parsed = await parse()
-        const oddsMatches = await oddsCheck(oddsMatchSettings, parsed)
+        const oddsMatches = await oddsCheck(oddsMatchSettings, parsed, bot)
             .then(filterOlder)
             .then(getStatistic)
 
@@ -50,11 +48,15 @@ async function index(bot) {
     }
 }
 
-async function getConfig() {
+async function getConfig(arr) {
     const config = {}
-    await db.collection("settings")
-        .get()
-        .then(snap => snap.forEach(el => config[el.id] = el.data()))
+    for(let id of arr) {
+        await db.collection("settings")
+            .doc(id)
+            .get()
+            .then(el => config[el.id] = el.data())
+    }
+
     return config
 }
 function getActiveUsers () {

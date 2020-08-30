@@ -6,9 +6,7 @@ const scene = require("./modules/scene.js");
 const db = require("./db.js")
 const start = require("./modules/start.js")
 const paymentScene = require("./modules/paymentScene")
-const fetch = require("node-fetch")
-
-const config = require("./modules/config")
+const check = require("./modules/checkCookies")
 
 const log4js = require("log4js");
 const logger = log4js.getLogger();
@@ -52,23 +50,6 @@ async function startTrailPeriod(user_id) {
     }
     catch (e) {
         throw new Error(e)
-    }
-}
-async function check() {
-    try {
-        const page = await fetch("https://ru.betsapi.com/mm/orders", {headers: config})
-            .then(el => el.text())
-            .catch(err => {
-                logger.error("IMPOSSIBLE ERROR! " + err)
-                throw new Error(err)
-            })
-
-        if (page.match(/Sign in with Google/ig)) {
-            return new Error("Куки не действительны")
-        }
-        else return "OK"
-    } catch (e) {
-        return new Error(e)
     }
 }
 

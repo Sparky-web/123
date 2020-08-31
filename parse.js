@@ -37,7 +37,7 @@ async function parse() {
 
             const totalNow = +score[0] + +score[2];
 
-            if(/*!/Esoccer/ig.test(league) && !/жен/ig.test(league) && !/жен/ig.test(firstTeam) && !/жен/ig.test(secondTeam) &&*/ link) {
+            if(!/Esoccer/ig.test(league) && !/жен/ig.test(league) && !/жен/ig.test(firstTeam) && !/жен/ig.test(secondTeam) && link) {
                 arr.push({
                     uId,
                     league,

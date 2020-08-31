@@ -9,6 +9,8 @@ const log4js = require("log4js");
 const logger = log4js.getLogger();
 logger.level = "debug";
 
+const parse = require("../parse")
+
 let isSent = false
 
 
@@ -16,9 +18,11 @@ const oddsCheck = async (config, matches, bot) => {
     const totals = config.total.split("-")
     const time = config.time.split("-");
 
+    console.log(totals, time)
+
     logger.info("Конфиг проверки матча - Тотал: " + config.total + ", Время: " + config.time)
     const x = await Promise.all(matches.map(async match => {
-        if(match.time > time[0] && match.time < time[1] /*&& match.score === "0-0"*/) {
+        if(match.time > time[0] && match.time < time[1] && match.score === "0-0") {
             const odds = await parseOdds(match.link).catch(e => {
                 if(!isSent) {
                     console.log("ОШИБКА")
@@ -29,9 +33,9 @@ const oddsCheck = async (config, matches, bot) => {
                 return undefined
             })
 
-            logger.info(`Проверка матча: \n${odds.link}\nТотал в начале матча - ${odds.odds}\nПодходит по критериям? ${odds && odds.odds > totals[0] && odds.odds < totals[1]}\n\n`)
+            logger.info(`Проверка матча: \n${odds.link}\nТотал в начале матча - ${odds.odds}\nПодходит по критериям? ${odds && odds.odds.trim() > totals[0] && odds.odds.trim() < totals[1]}\n\n`)
 
-            if(odds && odds.odds > totals[0] && odds.odds < totals[1]) {
+            if(odds && odds.odds.trim() > totals[0] && odds.odds.trim() < totals[1]) {
                 isSent = false
 
                 return {
@@ -74,6 +78,12 @@ const parseOdds = async (link) => {
     }
     throw new Error("Куки не дейстительны")
 }
+
+// async function f() {
+//     const matches = await parse()
+//     await oddsCheck({total: "3.29-5", time: "3-90"}, matches)
+// }
+// f()
 
 
 module.exports = oddsCheck

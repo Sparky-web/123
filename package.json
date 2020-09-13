@@ -20,7 +20,7 @@
     "log4js": "^6.3.0",
     "logger": "0.0.1",
     "node": "12.18.1",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "node-vk-bot-api": "^3.3.4"
   },
   "bin": "bot.js"

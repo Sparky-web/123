@@ -17,7 +17,7 @@
     "dotenv": "^8.2.0",
     "easyvk": "^2.7.35",
     "firebase-admin": "^8.13.0",
-    "log4js": "^6.3.0",
+    "log4js": "^6.4.0",
     "logger": "0.0.1",
     "node": "12.18.1",
     "node-fetch": "^2.6.0",

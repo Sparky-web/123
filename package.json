@@ -16,7 +16,7 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "easyvk": "^2.7.35",
-    "firebase-admin": "^8.13.0",
+    "firebase-admin": "^11.4.1",
     "log4js": "^6.3.0",
     "logger": "0.0.1",
     "node": "12.18.1",
